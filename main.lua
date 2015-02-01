@@ -3,64 +3,73 @@ local tileDisplayWidth, tileDisplayHeight
 local zoomX, zoomY
 local tilesetImage, tileSize
 local tileQuads = {}
---[[local spriteX, spriteY
-local spriteDisplayWidth, spriteDisplayHeight
-local spriteSheetImage, spriteSize
-local spriteQuads = {}
-local character]]--
 
 function love.load()
+	initializeWindow()
 	mapSetup()
 	mapView()
 	tilesetSetup()
-	--[[spriteSetup()
-	characterSetup()]]--
+	
+	player = {
+		gridX = 256,
+		gridY = 256,
+		actX = 200,
+		actY = 200,
+		speed = 10
+	}
 end
 
 function love.update(dt)
-	--[[if love.keyboard.isDown('up') then
-		moveMap(0, -0.2 * tileSize * dt)
-	end
-	
-	if love.keyboard.isDown('down') then
-		moveMap(0, 0.2 * tileSize * dt)
-	end]]--
-	
-	if love.keyboard.isDown('left') then
-		moveMap(-0.2 * tileSize * dt, 0)
-	end
-	
-	if love.keyboard.isDown('right') then
-		moveMap(0.2 * tileSize * dt, 0)
-	end
+	player.actY = player.actY - ((player.actY - player.gridY) * player.speed * dt)
+	player.actX	= player.actX - ((player.actX - player.gridX) * player.speed *  dt)
+
+	if player.gridY < 0 then
+        player.gridY = 0
+    elseif (player.gridY + 32) > screenHeight then
+        player.gridY = screenHeight - 32
+    end
+    
+    if player.gridX < 0 then
+    	player.gridX = 0
+    elseif (player.gridX + 32) > screenWidth then
+    	player.gridX = screenWidth - 32
+    end
 end
 
 function love.draw()
 	love.graphics.draw(tilesetBatch, math.floor(-zoomX * (mapX % 1) * tileSize), math.floor(-zoomY * (mapY % 1) * tileSize), 0, zoomX, zoomY)
+	love.graphics.rectangle("fill", player.actX, player.actY, 32, 32)
 end
 
---[[function love.keypressed(key)
+function love.keypressed(key)
 	if key == 'up' then
-		moveMap(0, -1)
+		player.gridY = player.gridY - 32
 	end
 	
 	if key == 'down' then
-		moveMap(0, 1)
+		player.gridY = player.gridY + 32
 	end
 	
 	if key == 'left' then
-		moveMap(-1, 0)
+		player.gridX = player.gridX - 32
 	end
 	
 	if key == 'right' then
-		moveMap(1, 0)
+		player.gridX = player.gridX + 32
 	end
-end]]--
+end
 
+function initializeWindow()
+	screenWidth = 800
+	screenHeight = 600
+	
+	love.window.setTitle('The RPG')
+    love.window.setMode(screenWidth, screenHeight)
+end
 
 function mapSetup()
 	mapWidth = 60
-	mapHeight = 40
+	mapHeight = 60
 	
 	map = {}
 	for x = 1, mapWidth do
@@ -102,15 +111,4 @@ function updateTilesetBatch()
 	end
 	
 	tilesetBatch:unbind()
-end
-
-function moveMap(dx, dy)
-	oldMapX = mapX
-	oldMapY = mapY
-	mapX = math.max(math.min(mapX + dx, mapWidth - tilesDisplayWidth), 1)
-	mapY = math.max(math.min(mapY + dy, mapHeight - tilesDisplayHeight), 1)
-	
-	if math.floor(mapX) ~= math.floor(oldMapX) or math.floor(oldMapY) ~= math.floor(oldMapY) then
-		updateTilesetBatch()
-	end
 end
