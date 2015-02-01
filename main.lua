@@ -1,24 +1,30 @@
 local map, mapX, mapY
 local tileDisplayWidth, tileDisplayHeight
 local zoomX, zoomY
-local tilesetImage, tileSize, tilesetSprite
+local tilesetImage, tileSize
 local tileQuads = {}
+--[[local spriteX, spriteY
+local spriteDisplayWidth, spriteDisplayHeight
+local spriteSheetImage, spriteSize
+local spriteQuads = {}
+local character]]--
 
 function love.load()
 	mapSetup()
 	mapView()
 	tilesetSetup()
-	
+	--[[spriteSetup()
+	characterSetup()]]--
 end
 
 function love.update(dt)
-	if love.keyboard.isDown('up') then
+	--[[if love.keyboard.isDown('up') then
 		moveMap(0, -0.2 * tileSize * dt)
 	end
 	
 	if love.keyboard.isDown('down') then
 		moveMap(0, 0.2 * tileSize * dt)
-	end
+	end]]--
 	
 	if love.keyboard.isDown('left') then
 		moveMap(-0.2 * tileSize * dt, 0)
@@ -33,7 +39,7 @@ function love.draw()
 	love.graphics.draw(tilesetBatch, math.floor(-zoomX * (mapX % 1) * tileSize), math.floor(-zoomY * (mapY % 1) * tileSize), 0, zoomX, zoomY)
 end
 
-function love.keypressed(key)
+--[[function love.keypressed(key)
 	if key == 'up' then
 		moveMap(0, -1)
 	end
@@ -49,7 +55,8 @@ function love.keypressed(key)
 	if key == 'right' then
 		moveMap(1, 0)
 	end
-end
+end]]--
+
 
 function mapSetup()
 	mapWidth = 60
@@ -74,11 +81,11 @@ function mapView()
 end
 
 function tilesetSetup()
-	tilesetImage = love.graphics.newImage("tileset.png")
+	tilesetImage = love.graphics.newImage("tileset2.png")
 	tileSize = 32
 	
-	tileQuads[0] = love.graphics.newQuad(0 * tileSize, 20 * tileSize, tileSize, tileSize, tilesetImage:getWidth(), tilesetImage:getHeight())
-	tileQuads[1] = love.graphics.newQuad(1 * tileSize, 20 * tileSize, tileSize, tileSize, tilesetImage:getWidth(), tilesetImage:getHeight())
+	tileQuads[0] = love.graphics.newQuad(0 * tileSize, 0 * tileSize, tileSize, tileSize, tilesetImage:getWidth(), tilesetImage:getHeight())
+	tileQuads[1] = love.graphics.newQuad(1 * tileSize, 5 * tileSize, tileSize, tileSize, tilesetImage:getWidth(), tilesetImage:getHeight())
 	
 	tilesetBatch = love.graphics.newSpriteBatch(tilesetImage, tilesDisplayWidth * tilesDisplayHeight)
 	updateTilesetBatch()
