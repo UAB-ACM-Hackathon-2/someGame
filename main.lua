@@ -1,27 +1,6 @@
 function love.load()
 	initializeWindow()
-	
-	player = {
-		width = 32,
-		height = 32,
-		gridX = 0,
-		gridY = 0
-	}
-	
-	enemy = {
-		width = 32,
-		height = 32,
-		gridX = 128,
-		gridY = 128,
-		speed = 8
-	}
-	
-	goal = {
-		width = 32,
-		height = 32,
-		gridX = 480,
-		gridY = 480
-	}
+	initializeObjects()
 	
 	state = 'notstarted'
 end
@@ -58,10 +37,13 @@ function love.update(dt)
     if (player.gridX + player.width > enemy.gridX) and (player.gridX < enemy.gridX + enemy.width) and 
     (player.gridY + player.height > enemy.gridY) and (player.gridY < enemy.gridY + enemy.height) then
     	state = 'lose'
+    	initializeObjects()
     end
     
-    if (player.gridX == goal.gridX) and (player.gridY == goal.gridY) then
+    if (player.gridX + player.width > goal.gridX) and (player.gridX < goal.gridX + goal.width) and 
+    (player.gridY + player.height > goal.gridY) and (player.gridY < goal.gridY + goal.height) then
     	state = 'win'
+    	initializeObjects()
     end
     
 	distX =  player.gridX - enemy.gridX
@@ -79,8 +61,11 @@ function love.update(dt)
 end
 
 function love.draw()
+	love.graphics.setColor(0, 0, 255)
 	love.graphics.rectangle("fill", player.gridX, player.gridY, 32, 32)
+	love.graphics.setColor(255, 0, 0)
 	love.graphics.rectangle("fill", enemy.gridX, enemy.gridY, 32, 32)
+	love.graphics.setColor(0, 255, 0)
 	love.graphics.rectangle("fill", goal.gridX, goal.gridY, 32, 32)
 	
 	if state == 'notstarted' then
@@ -101,12 +86,14 @@ function love.draw()
 		stopScreen()
 		width = love.graphics.getWidth()
 		love.graphics.printf("YOU WIN", 0, (screenHeight / 2) - 50, width, "center")
+		love.graphics.printf("Press r to play again!", 0, (screenHeight / 2) - 30, width, "center")
 	end
 	
-	if status == 'lose' then
+	if state == 'lose' then
 		stopScreen()
 		width = love.graphics.getWidth()
 		love.graphics.printf("GAME OVER", 0, (screenHeight / 2) - 50, width, "center")
+		love.graphics.printf("Press r to play again!", 0, (screenHeight / 2) - 30, width, "center")
 	end
 end
 
@@ -144,14 +131,45 @@ function love.keypressed(key)
 			state = 'play'
 		end
 	end
+	
+	if key == 'r' then
+		if state == 'win' or state == 'lose' then
+			state = 'play'
+		end
+	end
+	
 end
 
 function initializeWindow()
 	screenWidth = 800
 	screenHeight = 600
 	
-	love.window.setTitle('The Game')
+	love.window.setTitle('The Bullied Box')
     love.window.setMode(screenWidth, screenHeight)
+end
+
+function initializeObjects()
+	player = {
+		width = 32,
+		height = 32,
+		gridX = love.math.random(0, 800),
+		gridY = love.math.random(0, 600)
+	}
+	
+	enemy = {
+		width = 32,
+		height = 32,
+		gridX = love.math.random(0, 800),
+		gridY = love.math.random(0, 600),
+		speed = 8
+	}
+	
+	goal = {
+		width = 32,
+		height = 32,
+		gridX = love.math.random(0, 800),
+		gridY = love.math.random(0, 600)
+	}
 end
 
 function stopScreen()
